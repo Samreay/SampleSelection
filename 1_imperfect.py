@@ -47,9 +47,10 @@ res = Parallel(n_jobs=num_cores, backend="threading")(delayed(run_realisation)(i
 all_samples = np.vstack([r[0] for r in res])
 all_sampels_corrected = np.vstack([r[1] for r in res])
 
-print("Generating plot")
+print("Generating plot for %d realisations" % num_realisations)
 c = ChainConsumer()
 c.add_chain(all_samples, parameters=[r"$\mu$", r"$\sigma$"], name="Biased")
 c.add_chain(all_sampels_corrected, name="Corrected")
 c.configure(flip=False, sigmas=[0, 1, 2], colors=["#D32F2F", "#4CAF50"], linestyles=["-", "--"], shade_alpha=0.2)
-c.plot(filename="imperfect.pdf", figsize="column", truth=[mu, sigma], extents=[[95, 104], [7, 14]])
+c.plot(filename="img_1_imperfect.pdf", figsize="column", truth=[mu, sigma], extents=[[95, 105], [7, 14]])
+c.plot(filename="img_1_imperfect.png", figsize="column", truth=[mu, sigma], extents=[[95, 105], [7, 14]])

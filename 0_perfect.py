@@ -32,8 +32,9 @@ def run_realisation(i):
 res = Parallel(n_jobs=num_cores, backend="threading")(delayed(run_realisation)(i) for i in range(num_realisations))
 all_samples = np.vstack(res)
 
-print("Generating plot")
+print("Generating plot for %d realisations" % num_realisations)
 c = ChainConsumer()
 c.add_chain(all_samples, parameters=[r"$\mu$", r"$\sigma$"])
 c.configure(flip=False, sigmas=[0, 1, 2], summary=False)
-c.plotter.plot(filename="perfect.pdf", figsize="column", truth=[mu, sigma])
+c.plotter.plot(filename="img_0_perfect.pdf", figsize="column", truth=[mu, sigma])
+c.plotter.plot(filename="img_0_perfect.png", figsize="column", truth=[mu, sigma])

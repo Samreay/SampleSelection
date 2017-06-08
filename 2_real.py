@@ -63,8 +63,11 @@ def run_realisation(i):
     p0 = [[np.random.normal(mux, 10), np.random.normal(sigmax, 2), np.random.normal(muy, 5)] for j in range(nwalkers)]
     sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob_no_correction, args=[x, y])
     sampler.run_mcmc(p0, 2000)
+    print("Finishing 1st sampling for realisation %d" % i)
+
     sampler2 = emcee.EnsembleSampler(nwalkers, ndim, lnprob_approx_correction, args=[x, y])
     sampler2.run_mcmc(p0, 2000)
+    print("Finishing 2st sampling for realisation %d" % i)
 
     # Discard burn in and redshape our chains
     chain1 = sampler.chain[:, 100:, :].reshape((-1, ndim))
@@ -74,6 +77,7 @@ def run_realisation(i):
     weights = np.array([reweight(*row) for row in chain2])
     weights -= weights.max()  # As we are in log space, renormalise the convert back to real space
     weights = np.exp(weights)
+    print("Finishing reweighting for realisation %d" % i)
     return chain1, chain2, weights
 
 
@@ -83,10 +87,11 @@ all_samples = np.vstack([r[0] for r in res])
 all_sampels_corrected = np.vstack([r[1] for r in res])
 weights = np.array([r[2] for r in res]).flatten()
 
-print("Generating plot")
+print("Generating plot for %d realisations" % num_realisations)
 c = ChainConsumer()
 c.add_chain(all_samples, parameters=[r"$\mu$", r"$\sigma$", r"$\mu_y$"], name="Biased")
 c.add_chain(all_sampels_corrected, name="Approximate")
 c.add_chain(all_sampels_corrected, weights=weights, name="Corrected")
 c.configure(flip=False, sigmas=[0, 1, 2], colors=["#D32F2F", "#4CAF50", "#222222"], linestyles=[":", "--", "-"], shade_alpha=0.2, shade=True)
-c.plot(filename="real2.pdf", figsize="column", truth=[mux, sigmax], extents=[[90, 105], [6, 15]], parameters=2)
+c.plot(filename="img_2_real.pdf", figsize="column", truth=[mux, sigmax], extents=[[90, 105], [6, 15]], parameters=2)
+c.plot(filename="img_2_real.png", figsize="column", truth=[mux, sigmax], extents=[[90, 105], [6, 15]], parameters=2)
