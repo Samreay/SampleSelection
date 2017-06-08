@@ -53,5 +53,5 @@ c.add_chain(all_samples, parameters=[r"$\mu$", r"$\sigma$"], name="Biased")
 c.add_chain(all_sampels_corrected, name="Corrected")
 c.configure(flip=False, sigmas=[0, 1, 2], colors=["#D32F2F", "#4CAF50"],
             linestyles=["-", "--"], shade_alpha=0.2, diagonal_tick_labels=False)
-c.plot(filename="fig_1_imperfect.pdf", figsize="column", truth=[mu, sigma], extents=[[95, 105], [7, 14]])
-c.plot(filename="fig_1_imperfect.png", figsize="column", truth=[mu, sigma], extents=[[95, 105], [7, 14]])
+c.plotter.plot(filename="fig_1_imperfect.pdf", figsize="column", truth=[mu, sigma], extents=[[95, 105], [7, 14]])
+c.plotter.plot(filename="fig_1_imperfect.png", figsize="column", truth=[mu, sigma], extents=[[95, 105], [7, 14]])

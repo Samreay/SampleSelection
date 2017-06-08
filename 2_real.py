@@ -10,7 +10,7 @@ mux, sigmax, alpha = 100, 10, 92
 muy, sigmay, beta = 30, 5, 0.2
 ndim, nwalkers = 3, 10
 epsilon, num_obs = 4, 100
-num_realisations, num_cores = 8, 4
+num_realisations, num_cores = 100, 4
 s2 = np.sqrt(2)  # So I dont have to type this out a lot
 
 
@@ -60,14 +60,14 @@ def run_realisation(i):
     y = y[mask][:num_obs]
 
     # Setup emcee and sample both posteriors
-    p0 = [[np.random.normal(mux, 10), np.random.normal(sigmax, 2), np.random.normal(muy, 5)] for j in range(nwalkers)]
+    p0 = [[np.random.normal(mux, 10), np.random.normal(sigmax, 2), np.random.normal(muy, 2)] for j in range(nwalkers)]
     sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob_no_correction, args=[x, y])
     sampler.run_mcmc(p0, 2000)
     print("Finishing 1st sampling for realisation %d" % i)
 
     sampler2 = emcee.EnsembleSampler(nwalkers, ndim, lnprob_approx_correction, args=[x, y])
     sampler2.run_mcmc(p0, 2000)
-    print("Finishing 2st sampling for realisation %d" % i)
+    print("Finishing 2nd sampling for realisation %d" % i)
 
     # Discard burn in and redshape our chains
     chain1 = sampler.chain[:, 100:, :].reshape((-1, ndim))
@@ -75,7 +75,7 @@ def run_realisation(i):
 
     # Get the weights for each sample in our approximately corrected chain
     weights = np.array([reweight(*row) for row in chain2])
-    weights -= weights.max()  # As we are in log space, renormalise the convert back to real space
+    weights -= weights.max()  # As we are in log space, renormalise and convert back to real space
     weights = np.exp(weights)
     print("Finishing reweighting for realisation %d" % i)
     return chain1, chain2, weights
@@ -94,5 +94,5 @@ c.add_chain(all_samples_corrected, name="Approximate")
 c.add_chain(all_samples_corrected, weights=weights, name="Corrected")
 c.configure(flip=False, sigmas=[0, 1, 2], colors=["#D32F2F", "#4CAF50", "#222222"],
             linestyles=[":", "--", "-"], shade_alpha=0.2, shade=True, diagonal_tick_labels=False)
-c.plot(filename="fig_2_real.pdf", figsize="column", truth=[mux, sigmax], extents=[[90, 105], [6, 15]], parameters=2)
-c.plot(filename="fig_2_real.png", figsize="column", truth=[mux, sigmax], extents=[[90, 105], [6, 15]], parameters=2)
+c.plotter.plot(filename="fig_2_real.pdf", figsize="column", truth=[mux, sigmax], extents=[[90, 105], [6, 15]], parameters=2)
+c.plotter.plot(filename="fig_2_real.png", figsize="column", truth=[mux, sigmax], extents=[[90, 105], [6, 15]], parameters=2)
