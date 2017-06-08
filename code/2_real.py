@@ -94,5 +94,5 @@ c.add_chain(all_samples_corrected, name="Approximate")
 c.add_chain(all_samples_corrected, weights=weights, name="Corrected")
 c.configure(flip=False, sigmas=[0, 1, 2], colors=["#D32F2F", "#4CAF50", "#222222"],
             linestyles=[":", "--", "-"], shade_alpha=0.2, shade=True, diagonal_tick_labels=False)
-c.plotter.plot(filename="fig_2_real.pdf", figsize="column", truth=[mux, sigmax], extents=[[90, 105], [6, 15]], parameters=2)
-c.plotter.plot(filename="fig_2_real.png", figsize="column", truth=[mux, sigmax], extents=[[90, 105], [6, 15]], parameters=2)
+c.plotter.plot(filename="../paper/fig_2_real.pdf", figsize="column", truth=[mux, sigmax], extents=[[90, 105], [6, 15]], parameters=2)
+c.plotter.plot(filename="../plots/fig_2_real.png", figsize="column", truth=[mux, sigmax], extents=[[90, 105], [6, 15]], parameters=2)
