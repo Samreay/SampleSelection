@@ -1,0 +1,73 @@
+\begin{thebibliography}{}
+\makeatletter
+\relax
+\def\mn@urlcharsother{\let\do\@makeother \do\$\do\&\do\#\do\^\do\_\do\%\do\~}
+\def\mn@doi{\begingroup\mn@urlcharsother \@ifnextchar [ {\mn@doi@}
+  {\mn@doi@[]}}
+\def\mn@doi@[#1]#2{\def\@tempa{#1}\ifx\@tempa\@empty \href
+  {http://dx.doi.org/#2} {doi:#2}\else \href {http://dx.doi.org/#2} {#1}\fi
+  \endgroup}
+\def\mn@eprint#1#2{\mn@eprint@#1:#2::\@nil}
+\def\mn@eprint@arXiv#1{\href {http://arxiv.org/abs/#1} {{\tt arXiv:#1}}}
+\def\mn@eprint@dblp#1{\href {http://dblp.uni-trier.de/rec/bibtex/#1.xml}
+  {dblp:#1}}
+\def\mn@eprint@#1:#2:#3:#4\@nil{\def\@tempa {#1}\def\@tempb {#2}\def\@tempc
+  {#3}\ifx \@tempc \@empty \let \@tempc \@tempb \let \@tempb \@tempa \fi \ifx
+  \@tempb \@empty \def\@tempb {arXiv}\fi \@ifundefined
+  {mn@eprint@\@tempb}{\@tempb:\@tempc}{\expandafter \expandafter \csname
+  mn@eprint@\@tempb\endcsname \expandafter{\@tempc}}}
+
+\bibitem[\protect\citeauthoryear{{Betoule} et~al.,}{{Betoule}
+  et~al.}{2014}]{BetouleKessler2014}
+{Betoule} M.,  et~al., 2014, \mn@doi [\aap] {10.1051/0004-6361/201423413},
+  \href {http://adsabs.harvard.edu/abs/2014A%26A...568A..22B} {568, A22}
+
+\bibitem[\protect\citeauthoryear{Butkevich, Berdyugin  \& Teerikorpi}{Butkevich
+  et~al.}{2005}]{Butkevich2005}
+Butkevich A.~G.,  Berdyugin A.~V.,   Teerikorpi P.,  2005, \mn@doi [Monthly
+  Notices of the Royal Astronomical Society]
+  {10.1111/j.1365-2966.2005.09306.x}, 362, 321
+
+\bibitem[\protect\citeauthoryear{Colchero \& Clark}{Colchero \&
+  Clark}{2012}]{JANE1898}
+Colchero F.,  Clark J.~S.,  2012, \mn@doi [Journal of Animal Ecology]
+  {10.1111/j.1365-2656.2011.01898.x}, 81, 139
+
+\bibitem[\protect\citeauthoryear{{Conley} et~al.,}{{Conley}
+  et~al.}{2011}]{ConleyGuySullivan2011}
+{Conley} A.,  et~al., 2011, \mn@doi [\apjs] {10.1088/0067-0049/192/1/1}, \href
+  {http://adsabs.harvard.edu/abs/2011ApJS..192....1C} {192, 1}
+
+\bibitem[\protect\citeauthoryear{Gelfand, Smith  \& Lee}{Gelfand
+  et~al.}{1992}]{Gelfand1992}
+Gelfand A.~E.,  Smith A. F.~M.,   Lee T.-M.,  1992, \mn@doi [Journal of the
+  American Statistical Association] {10.1080/01621459.1992.10475235}, 87, 523
+
+\bibitem[\protect\citeauthoryear{Grogger \& Carson}{Grogger \&
+  Carson}{1991}]{grogger1991models}
+Grogger J.~T.,  Carson R.~T.,  1991, Journal of applied econometrics, 6, 225
+
+\bibitem[\protect\citeauthoryear{Gull}{Gull}{1989}]{Gull1989bayesian}
+Gull S.~F.,  1989, in , Maximum Entropy and Bayesian Methods.
+Springer, pp 511--518
+
+\bibitem[\protect\citeauthoryear{Klein \& Moeschberger}{Klein \&
+  Moeschberger}{2005}]{klein2005survival}
+Klein J.~P.,  Moeschberger M.~L.,  2005, Survival analysis: techniques for
+  censored and truncated data.
+Springer Science \& Business Media
+
+\bibitem[\protect\citeauthoryear{O'Neill \& Barry}{O'Neill \&
+  Barry}{1995}]{o1995truncated}
+O'Neill T.~J.,  Barry S.~C.,  1995, Biometrics, pp 533--541
+
+\bibitem[\protect\citeauthoryear{{Rubin} et~al.,}{{Rubin}
+  et~al.}{2015}]{Rubin2015}
+{Rubin} D.,  et~al., 2015, \mn@doi [\apj] {10.1088/0004-637X/813/2/137}, \href
+  {http://adsabs.harvard.edu/abs/2015ApJ...813..137R} {813, 137}
+
+\bibitem[\protect\citeauthoryear{Woodroofe}{Woodroofe}{1985}]{woodroofe1985estimating}
+Woodroofe M.,  1985, The Annals of Statistics, pp 163--177
+
+\makeatother
+\end{thebibliography}
