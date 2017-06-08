@@ -84,14 +84,14 @@ def run_realisation(i):
 # Launch our jobs and collate the results
 res = Parallel(n_jobs=num_cores, backend="threading")(delayed(run_realisation)(i) for i in range(num_realisations))
 all_samples = np.vstack([r[0] for r in res])
-all_sampels_corrected = np.vstack([r[1] for r in res])
+all_samples_corrected = np.vstack([r[1] for r in res])
 weights = np.array([r[2] for r in res]).flatten()
 
 print("Generating plot for %d realisations" % num_realisations)
 c = ChainConsumer()
 c.add_chain(all_samples, parameters=[r"$\mu$", r"$\sigma$", r"$\mu_y$"], name="Biased")
-c.add_chain(all_sampels_corrected, name="Approximate")
-c.add_chain(all_sampels_corrected, weights=weights, name="Corrected")
+c.add_chain(all_samples_corrected, name="Approximate")
+c.add_chain(all_samples_corrected, weights=weights, name="Corrected")
 c.configure(flip=False, sigmas=[0, 1, 2], colors=["#D32F2F", "#4CAF50", "#222222"],
             linestyles=[":", "--", "-"], shade_alpha=0.2, shade=True, diagonal_tick_labels=False)
 c.plot(filename="fig_2_real.pdf", figsize="column", truth=[mux, sigmax], extents=[[90, 105], [6, 15]], parameters=2)
