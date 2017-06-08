@@ -41,8 +41,8 @@ def reweight(mux, sigmax, muy):
     # Calculate w_approx. Better to store this when you calculate it the first time
     original_weight = 0.5 * erfc((alpha - mux - epsilon)/(s2 * sigmax))
 
-    # Using Monte Carlo integration of a hundred thousand points
-    x, y, mask = get_data(mux, sigmax, muy, n=100000)
+    # Using Monte Carlo integration of ten thousand points
+    x, y, mask = get_data(mux, sigmax, muy, n=10000)
     new_weight = mask.sum() * 1.0 / mask.size
 
     # Calculate $\mathcal{L}_{i2}$
