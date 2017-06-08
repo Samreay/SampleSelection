@@ -7,7 +7,8 @@ from scipy.special import erfc
 
 mu, sigma, alpha, num_obs = 100, 10, 85, 100   # Our model parameters
 ndim, nwalkers = 2, 10   # emcee Parameters
-num_realisations, num_cores = 8, 4  # Number of realisations to generate and number of cpu cores to use
+num_realisations, num_cores = 16, 4  # Number of realisations to generate and number of cpu cores to use
+# Set num_realisations to 100 to produce the paper plot
 
 
 def lnprob_no_correction(theta, data):

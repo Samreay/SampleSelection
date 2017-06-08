@@ -10,8 +10,9 @@ mux, sigmax, alpha = 100, 10, 92
 muy, sigmay, beta = 30, 5, 0.2
 ndim, nwalkers = 3, 10
 epsilon, num_obs = 4, 100
-num_realisations, num_cores = 100, 4
+num_realisations, num_cores = 16, 4
 s2 = np.sqrt(2)  # So I dont have to type this out a lot
+# Set num_realisations to 100 to produce the paper plot, and increase MC samples to 100k
 
 
 def lnprob_no_correction(theta, xs, ys):
@@ -41,7 +42,7 @@ def reweight(mux, sigmax, muy):
     # Calculate w_approx. Better to store this when you calculate it the first time
     original_weight = 0.5 * erfc((alpha - mux - epsilon)/(s2 * sigmax))
 
-    # Using Monte Carlo integration of ten thousand points
+    # Using Monte Carlo integration of ten thousand points, use 100k to mimic paper if you like waiting
     x, y, mask = get_data(mux, sigmax, muy, n=10000)
     new_weight = mask.sum() * 1.0 / mask.size
 
