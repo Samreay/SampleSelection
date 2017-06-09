@@ -87,7 +87,7 @@ USA
 
 
 \begin{abstract}
-Astronomical observations preferentially discover bright objects; targets are selected based on colour cuts; our atmosphere absorbs infrared. Failing to account for these effects leads to biased analyses. In this paper we present a simple overview of a Bayesian consideration of sample selection, giving solutions to both analytically tractable and intractable models. This is accomplished via a combination of analytic approximations and Monte Carlo integration, in which dataset simulation is efficiently used to correct for issues in the observed dataset. This methodology is also applicable for data truncation. Toy models are included for demonstration, along with discussions of numerical considerations and how to optimise for implementation.  We provide sample code to demonstrate the techniques.  The methods in this paper should be widely applicable in fields beyond astronomy, wherever sample selection effects occur.
+Astronomical observations preferentially discover bright objects; targets are selected based on colour cuts; imperfect classification yields impure samples. Failing to account for these effects leads to biased analyses. In this paper we present a simple overview of a Bayesian consideration of sample selection, giving solutions to both analytically tractable and intractable models. This is accomplished via a combination of analytic approximations and Monte Carlo integration, in which dataset simulation is efficiently used to correct for issues in the observed dataset. This methodology is also applicable for data truncation. Toy models are included for demonstration, along with discussions of numerical considerations and how to optimise for implementation.  We provide sample code to demonstrate the techniques.  The methods in this paper should be widely applicable in fields beyond astronomy, wherever sample selection effects occur.
 \end{abstract}
 
 
@@ -119,11 +119,12 @@ which gives the probability of the model parameter values ($\theta$) given the d
 \begin{align}
 \mathcal{L} &= P({\rm data} | \theta, S). \label{eq:like}
 \end{align}
-A variety of selection criteria are possible, and in our method we use our data in combination with the proposed model to determine the probability of particular selection criteria.  That is, we characterise a function $P(S|{\rm data},\theta)$, which colloquially can be stated as \textit{the probability of a potential observation passing selection cuts, given our observations and the underlying model}. We can introduce this expression in a few lines due to symmetry of joint probabilities and utilising that $P(x,y) = P(x|y)P(y) = P(y|x)P(x)$:
+A variety of selection criteria are possible, and in our method we use our data in combination with the proposed model to determine the probability of particular selection criteria.  That is, we characterise a function $P(S|{\rm data},\theta)$, which colloquially can be stated as \textit{the probability of a potential observation passing selection cuts, given our observations and the underlying model}. We can introduce this expression in a few lines due to symmetry of joint probabilities and utilising that $P(x,y,z) = P(x|y,z)P(y,z) = P(y|x, z)P(x, z)$:
 \begin{align}
-P({\rm data}, S | \theta) &= P(S, {\rm data} | \theta) \\
-P({\rm data} | \theta, S) P(S | \theta)  &= P(S | {\rm data}, \theta) P({\rm data} | \theta)  \\
-P({\rm data} | \theta, S) &= \frac{P(S | {\rm data}, \theta) P({\rm data} | \theta) }{P(S | \theta)},
+P({\rm data} | S , \theta) P(S, \theta) &= P(S | {\rm data}, \theta) P({\rm data}, \theta)\\
+P({\rm data} | S , \theta) &= \frac{ P(S | {\rm data}, \theta) P({\rm data}, \theta) }{ P(S, \theta) }\\
+ &= \frac{ P(S | {\rm data}, \theta) P({\rm data} | \theta) P(\theta)}{ P(S | \theta)  P(\theta)}\\
+ &= \frac{ P(S | {\rm data}, \theta) P({\rm data} | \theta)}{ P(S | \theta) }
 \end{align}
 which is equal to the likelihood $\mathcal{L}$. Introducing an integral over all possible events $D$, so we can evaluate $P(S|\theta)$, 
 \begin{align}
@@ -251,9 +252,9 @@ Let us modify our imperfect toy model from the previous section. Instead of obse
 where $\theta = \lbrace \mu, \sigma, \mu_y, \sigma_y \rbrace$. As before, given a successful observation and a deterministic selection efficiency, $P(S|x_i, y_i,\theta) = 1$. We continue to use uniform priors to keep the example simple. Substituting in the step function selection efficiency for $P(S|X, Y,\theta)$ and the normal distributions for $P(x_i, y_i|\theta)$, we have
 \begin{align}
 \mathcal{L}_i &= \frac{ \mathcal{N}(x_i|\mu, \sigma) \mathcal{N}(y_i|\mu_y, \sigma_y)}
-{\iint_{-\infty}^\infty \mathcal{H}(X + \beta Y - \alpha) \mathcal{N}(X|\mu, \sigma) \mathcal{N}(Y|\mu_y, \sigma_y)\, dX dY} \label{eq:above}
+{\iint_{-\infty}^\infty \mathcal{H}(X + \beta Y - \alpha) \mathcal{N}(X|\mu, \sigma) \mathcal{N}(Y|\mu_y, \sigma_y)\, dX dY}. \label{eq:above}
 \end{align}
-In our example, if $\beta \ll 1$, such that the majority of selection effect is encapsulated by $x$ and not $y$, our approximate correction can take the form found in the previous correction from Section \ref{sec:imperfect}. Having a known $\beta$ and a guess $\mu_{y, {\rm approx}}$, we add in a small adjustment to the analytic correction from Section \ref{sec:imperfect} to account for the expected mean contribution of $y$ into the selection effect:
+While we could work directly with the likelihood in Equation \eqref{eq:above}, it is beneficial to seek an analytic approximation. In our example, if $\beta \ll 1$, such that the majority of selection effect is encapsulated by $x$ and not $y$, our approximate correction can take the form found in the previous correction from Section \ref{sec:imperfect}. Having a known $\beta$ and a guess $\mu_{y, {\rm approx}}$, we add in a small adjustment to the analytic correction from Section \ref{sec:imperfect} to account for the expected mean contribution of $y$ into the selection effect:
 \begin{align}
 w_{\rm approx} = \frac{1}{2} {\rm erfc}\left[ \frac{\alpha - \mu - \beta \mu_{y, {\rm approx}}}{\sqrt{2}\sigma} \right].
 \end{align}
