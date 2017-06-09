@@ -27,24 +27,24 @@
 \usepackage{array}
 \bibliographystyle{mnras}
 
-\usepackage{lineno}
-\newcommand*\patchAmsMathEnvironmentForLineno[1]{%
-	\expandafter\let\csname old#1\expandafter\endcsname\csname #1\endcsname
-	\expandafter\let\csname oldend#1\expandafter\endcsname\csname end#1\endcsname
-	\renewenvironment{#1}%
-	{\linenomath\csname old#1\endcsname}%
-	{\csname oldend#1\endcsname\endlinenomath}}% 
-\newcommand*\patchBothAmsMathEnvironmentsForLineno[1]{%
-	\patchAmsMathEnvironmentForLineno{#1}%
-	\patchAmsMathEnvironmentForLineno{#1*}}%
-\AtBeginDocument{%
-	\patchBothAmsMathEnvironmentsForLineno{equation}%
-	\patchBothAmsMathEnvironmentsForLineno{align}%
-	\patchBothAmsMathEnvironmentsForLineno{flalign}%
-	\patchBothAmsMathEnvironmentsForLineno{alignat}%
-	\patchBothAmsMathEnvironmentsForLineno{gather}%
-	\patchBothAmsMathEnvironmentsForLineno{multline}%
-}
+%\usepackage{lineno}
+%\newcommand*\patchAmsMathEnvironmentForLineno[1]{%
+%	\expandafter\let\csname old#1\expandafter\endcsname\csname #1\endcsname
+%	\expandafter\let\csname oldend#1\expandafter\endcsname\csname end#1\endcsname
+%	\renewenvironment{#1}%
+%	{\linenomath\csname old#1\endcsname}%
+%	{\csname oldend#1\endcsname\endlinenomath}}% 
+%\newcommand*\patchBothAmsMathEnvironmentsForLineno[1]{%
+%	\patchAmsMathEnvironmentForLineno{#1}%
+%	\patchAmsMathEnvironmentForLineno{#1*}}%
+%\AtBeginDocument{%
+%	\patchBothAmsMathEnvironmentsForLineno{equation}%
+%	\patchBothAmsMathEnvironmentsForLineno{align}%
+%	\patchBothAmsMathEnvironmentsForLineno{flalign}%
+%	\patchBothAmsMathEnvironmentsForLineno{alignat}%
+%	\patchBothAmsMathEnvironmentsForLineno{gather}%
+%	\patchBothAmsMathEnvironmentsForLineno{multline}%
+%}
 
 \newcommand{\myemail}{samuelreay@gmail.com}
 \newcommand {\etal} {\emph{~et~al.} }
@@ -75,7 +75,7 @@ USA
 \pubyear{2017}
 
 \begin{document}
-\linenumbers
+%\linenumbers
 
 
 \label{firstpage}
@@ -87,7 +87,7 @@ USA
 
 
 \begin{abstract}
-{\green Samples of astronomical sources are drawn from underlying distributions. The samples we observe generally do not necessarily represent the full population of sources in the Universe, but are preferentially biased toward those sources that are more likely to be detected.  Malmquist bias is a well-known example. Sample selection is not unique to astronomy - noisy data is pruned in almost all fields, and physical limits  (such as age only being positive) are inescapable. }These sample selection effects need to be accounted for in statistical analyses. In this paper we present a simple overview of a Bayesian consideration of sample selection, giving solutions to both analytically tractable and intractable models. This is accomplished via a combination of analytic approximations and Monte Carlo integration, in which dataset simulation is efficiently used to correct for issues in the observed dataset. Toy models are included for demonstration, along with discussions of numerical considerations and how to optimise for implementation.
+Astronomical observations preferentially discover bright objects; mass is strictly positive; samples are often impure.  These types of sample selection effects, truncation, and contamination need to be accounted for in statistical analyses. In this paper we present a simple overview of a Bayesian consideration of sample selection, giving solutions to both analytically tractable and intractable models. This is accomplished via a combination of analytic approximations and Monte Carlo integration, in which dataset simulation is efficiently used to correct for issues in the observed dataset. Toy models are included for demonstration, along with discussions of numerical considerations and how to optimise for implementation.  We provide sample code to demonstrate the techniques.  The methods in this paper should be widely applicable in fields beyond astronomy, wherever sample selection effects occur.
 \end{abstract}
 
 
@@ -119,17 +119,13 @@ which gives the probability of the model parameter values ($\theta$) given the d
 \begin{align}
 \mathcal{L} &= P({\rm data} | \theta, S). \label{eq:like}
 \end{align}
-If we seek to describe the chance of our observation passing the sample selection as a function of the observation itself and model parameters, we need to rearrange the above equation to include $P(S|{\rm data},\theta)$, which colloquially can be stated as \textit{the probability of selection given our observation and model}. This can be done in a few lines:
+A variety of selection criteria are possible, and in our method we use our data in combination with the proposed model to determine the probability of particular selection criteria.  That is, we characterise a function $P(S|{\rm data},\theta)$, which colloquially can be stated as \textit{the probability of a potential observation passing selection cuts, given our observations and the underlying model}. We can introduce this expression in a few lines due to symmetry of joint probabilities:
 \begin{align}
-P({\rm data}, S | \theta) &= P({\rm data}, S | \theta) \\
+P({\rm data}, S | \theta) &= P(S, {\rm data} | \theta) \\
 P({\rm data} | \theta, S) P(S | \theta)  &= P(S | {\rm data}, \theta) P({\rm data} | \theta)  \\
 P({\rm data} | \theta, S) &= \frac{P(S | {\rm data}, \theta) P({\rm data} | \theta) }{P(S | \theta)},
 \end{align}
-thus allowing us to explicitly write our likelihood as
-\begin{align}
-\mathcal{L}&= \frac{P(S|{\rm data},\theta) P({\rm data}|\theta)}{P(S|\theta)}.
-\end{align}
-Introducing an integral over all possible data $D$, so we can evaluate $P(S|\theta)$, 
+which is equal to the likelihood $\mathcal{L}$. Introducing an integral over all possible events $D$, so we can evaluate $P(S|\theta)$, 
 \begin{align}
 \mathcal{L}&= \frac{P(S|{\rm data},\theta) P({\rm data}|\theta)}{\int P(S, D|\theta)\, dD} \\
 \mathcal{L} &= \frac{P(S|{\rm data},\theta) P({\rm data}|\theta)}{\int P(S | D, \theta) P(D|\theta)\, dD}, \label{eq:main}
@@ -142,7 +138,7 @@ where the integral in the denominator has the same dimensionality as the experim
 \section{Sample Selection}
 \label{sec:examples}
 
- In this section we present sample selections of increasing complexity. Each sample selection is accompanied by an illustrative example inspired by Type Ia supernova cosmology, where we characterize the properties of a standard or standardizable candle. {\green Python code implementations of all examples, including plot generation, can be found at the Github repository \verb|SampleSelection|\footnote{\url{https://github.com/samreay/SampleSelection}}.}
+ In this section we present sample selections of increasing complexity. Each sample selection is accompanied by an illustrative example inspired by Type Ia supernova cosmology, where we characterize the properties of a standard or standardizable candle. Python code implementations of all examples, including plot generation, can be found at the Github repository \verb|SampleSelection|.\footnote{\url{https://github.com/samreay/SampleSelection}}
  
  
 \subsection{Complete Selection}
@@ -170,7 +166,7 @@ where $\mathcal{N}(x_i|\mu,\sigma)$ represents a the probability of drawing samp
 	\begin{center}
 		\includegraphics[width=\columnwidth]{fig_0_perfect.pdf}
 	\end{center}
-	\caption{A systematic test of our perfect model, done by stacking the output chains from fitting 100 independent realisations of our 100 data points. Any systematic offset in our model would be revealed by a shift in the stacked results away from the true parameter values. {\green This plot can be generated by executing  \mbox{\texttt{0\_perfect.py}}}.}
+	\caption{A systematic test of our perfect model, done by stacking the output chains from fitting 100 independent realisations of our 100 data points. Any systematic offset in our model would be revealed by a shift in the stacked results away from the true parameter values. This plot can be generated by executing  \mbox{\texttt{0\_perfect.py}}}.
 	\label{fig:perfect}
 \end{figure}
 
@@ -214,7 +210,7 @@ We can add this correction to our model, and note that we now recover unbiased p
 	\begin{center}
 		\includegraphics[width=\columnwidth]{fig_1_imperfect.pdf}
 	\end{center}
-	\caption{A systematic test of our imperfect model, done by stacking the output chains from fitting 100 independent realisations of our 100 data points, subject to our thresholding. The bias shown in the red `Biased' contour can be corrected to via the techniques shown in Section \ref{sec:imperfect} to recover unbiased surfaces. {\green This plot can be generated by executing  \mbox{\texttt{1\_imperfect.py}}.}}
+	\caption{A systematic test of our imperfect model, done by stacking the output chains from fitting 100 independent realisations of our 100 data points, subject to our thresholding. The bias shown in the red `Biased' contour can be corrected to via the techniques shown in Section \ref{sec:imperfect} to recover unbiased surfaces. This plot can be generated by executing  \mbox{\texttt{1\_imperfect.py}}.}
 	\label{fig:imperfect}
 \end{figure}
 
@@ -256,7 +252,7 @@ It is tempting to separate out the numerator and denominator of Equation \eqref{
 	\begin{center}
 		\includegraphics[width=\columnwidth]{fig_2_real.pdf}
 	\end{center}
-	\caption{A systematic test of our more complicated model, done by stacking the output chains from fitting 100 independent realisations of our 100 data points, subject to our thresholding. The likelihood $\mathcal{L}_1$ was evaluated, and reweighted using Monte Carlo integration of a hundred thousand possible events as per $\mathcal{L}_2$. The truncated data with no correction is shown as `Biased' in dotted red, the `Approximate` only correction ($\mathcal{L}_1$) shown in dashed green, and the final reweighted chain shown in solid black as `Corrected'. A large number of samples of $\mathcal{L}_1$ had to be generated to ensure sufficient sampling of our `Corrected' posterior. {\green This plot can be generated by executing \mbox{\texttt{2\_real.py}}.}}
+	\caption{A systematic test of our more complicated model, done by stacking the output chains from fitting 100 independent realisations of our 100 data points, subject to our thresholding. The likelihood $\mathcal{L}_1$ was evaluated, and reweighted using Monte Carlo integration of a hundred thousand possible events as per $\mathcal{L}_2$. The truncated data with no correction is shown as `Biased' in dotted red, the `Approximate` only correction ($\mathcal{L}_1$) shown in dashed green, and the final reweighted chain shown in solid black as `Corrected'. A large number of samples of $\mathcal{L}_1$ had to be generated to ensure sufficient sampling of our `Corrected' posterior. This plot can be generated by executing \mbox{\texttt{2\_real.py}}.}
 	\label{fig:real}
 \end{figure}
 
@@ -359,7 +355,7 @@ Sample selection is a pervasive issue in many scientific domains. For simple cas
 
 \section*{Acknowledgments}
 
-We gratefully acknowledge the input of the researchers that were consulted during the creation of this paper, especially the Dark Energy Survey Supernova Working Group. {\green Parts of this research were conducted by the Australian Research Council Centre of Excellence for All-sky Astrophysics (CAASTRO), through project number CE110001020.}
+We gratefully acknowledge the input of the researchers that were consulted during the creation of this paper, especially the Dark Energy Survey Supernova Working Group. Parts of this research were conducted by the Australian Research Council Centre of Excellence for All-sky Astrophysics (CAASTRO), through project number CE110001020.
 
 
 \bibliography{bibliography}
