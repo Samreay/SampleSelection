@@ -12,7 +12,9 @@ ndim, nwalkers = 3, 10
 epsilon, num_obs = 4, 100
 num_realisations, num_cores = 16, 4
 s2 = np.sqrt(2)  # So I dont have to type this out a lot
+
 # Set num_realisations to 100 to produce the paper plot, and increase MC samples to 100k
+# To speed up the code I also fix sigma_y instead of fitting it
 
 
 def lnprob_no_correction(theta, xs, ys):

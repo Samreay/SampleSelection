@@ -56,7 +56,7 @@
 
 
 %\shortauthors{}
-\title[Correcting for sample selection in Bayesian analyses]{Correcting for sample selection in Bayesian analyses}
+\title[Accounting for sample selection in Bayesian analyses]{Accounting for sample selection in Bayesian analyses}
 
 \author[S. R. Hinton et al.]{Samuel R. Hinton,$^{1,2}$\thanks{E-mail: \href{samuelreay@gmail.com}}
 	Alex Kim,$^{3}$
@@ -87,7 +87,7 @@ USA
 
 
 \begin{abstract}
-Astronomical observations preferentially discover bright objects; mass is strictly positive; samples are often impure.  These types of sample selection effects, truncation, and contamination need to be accounted for in statistical analyses. In this paper we present a simple overview of a Bayesian consideration of sample selection, giving solutions to both analytically tractable and intractable models. This is accomplished via a combination of analytic approximations and Monte Carlo integration, in which dataset simulation is efficiently used to correct for issues in the observed dataset. Toy models are included for demonstration, along with discussions of numerical considerations and how to optimise for implementation.  We provide sample code to demonstrate the techniques.  The methods in this paper should be widely applicable in fields beyond astronomy, wherever sample selection effects occur.
+Astronomical observations preferentially discover bright objects; targets are selected based on colour cuts; our atmosphere absorbs infrared. Failing to account for these effects leads to biased analyses. In this paper we present a simple overview of a Bayesian consideration of sample selection, giving solutions to both analytically tractable and intractable models. This is accomplished via a combination of analytic approximations and Monte Carlo integration, in which dataset simulation is efficiently used to correct for issues in the observed dataset. This methodology is also applicable for data truncation. Toy models are included for demonstration, along with discussions of numerical considerations and how to optimise for implementation.  We provide sample code to demonstrate the techniques.  The methods in this paper should be widely applicable in fields beyond astronomy, wherever sample selection effects occur.
 \end{abstract}
 
 
@@ -99,7 +99,7 @@ Astronomical observations preferentially discover bright objects; mass is strict
 
 \section{Introduction}
 
-Sample selection is a problem in many areas of scientific inquiry. For example, it is one of the primary difficulties when performing supernova cosmology analysis, as telescopes more easily detect bright objects than faint ones, causing our observed supernova distribution to deviate from the actual underlying distribution. This  ``Malmquist bias'', has been a subject of much investigation \citep{Butkevich2005}. It is taken into account during analyses by either modifying the observed data to remove the expected bias \citep{BetouleKessler2014, ConleyGuySullivan2011}, or by incorporating the expected bias into the underlying model \citep{Rubin2015}. Truncated data are also commonly encountered in biological fields, where data such as mortality rates are left-truncated \citep{JANE1898}. Simplified and generalised examples have been investigated in numerous fashions \citep{woodroofe1985estimating, Gull1989bayesian, grogger1991models, o1995truncated} and with application to specific fitting algorithms \citep{Gelfand1992}. Whilst generalised resources exist that provide a comprehensive overview of sample selection and analysis techniques in a similar fashion to this work \citep{klein2005survival}, these sources are often opaque due to volume and mathematical complexity. 
+Sample selection is a problem in many areas of scientific inquiry. For example, it is one of the primary difficulties when performing supernova cosmology analysis, as telescopes more easily detect bright objects than faint ones, causing our observed supernova distribution to deviate from the actual underlying distribution. This  ``Malmquist Bias'', has been a subject of much investigation \citep{Butkevich2005}. It is taken into account during analyses by either modifying the observed data to remove the expected bias \citep{BetouleKessler2014, ConleyGuySullivan2011}, or by incorporating the expected bias into the underlying model \citep{Rubin2015}. Truncated data are also commonly encountered in biological fields, where data such as mortality rates are left-truncated \citep{JANE1898}. Simplified and generalised examples have been investigated in numerous fashions \citep{woodroofe1985estimating, Gull1989bayesian, grogger1991models, o1995truncated} and with application to specific fitting algorithms \citep{Gelfand1992}. Whilst generalised resources exist that provide a comprehensive overview of sample selection and analysis techniques in a similar fashion to this work \citep{klein2005survival}, these sources are often opaque due to volume and mathematical complexity. 
 
 This work provides a simple treatment of sample selection using a common Bayesian technique. The general theory for considering selection effects is discussed in Section \ref{sec:theory}. Section \ref{sec:examples} provides three examples of increasing complexity with sample selection. Section \ref{sec:tricks} details numeric concerns and tricks to be aware of for effective implementation of Monte Carlo corrections applied to analytic approximations.
 
@@ -115,11 +115,11 @@ When formulating and fitting a model using a constraining dataset, we wish to re
 \begin{align}
 P(\theta | {\rm data}) \propto P({\rm data} | \theta) P(\theta),
 \end{align}
-which gives the probability of the model parameter values ($\theta$) given the data.  Prior knowledge of the allowed values of the model parameters is encapsulated in the prior probability $P(\theta)$. Of primary interest to us is the likelihood of observing the data given our parametrised model, $\mathcal{L} \equiv P({\rm data} | \theta)$. When dealing with experiments which have imperfect selection efficiency, our likelihood must take that efficiency into account.  We need to describe the probability that the events we observe were both drawn from the distribution predicted by the underlying theoretical model \textit{and} that those events, given they happened, were subsequently successfully observed.  To make this extra conditional explicit, we write the likelihood of the data given an underlying model, $\theta$, \textit{and} selection efficiency, $S$, as:
+which gives the probability of the model parameter values ($\theta$) given the data.  Prior knowledge of the allowed values of the model parameters is encapsulated in the prior probability $P(\theta)$. Of primary interest to us is the likelihood of observing the data given our parametrised model, $\mathcal{L} \equiv P({\rm data} | \theta)$. When dealing with experiments which have imperfect selection efficiency, our likelihood must take that efficiency into account.  We need to describe the probability that the events we observe are both drawn from the distribution predicted by the underlying theoretical model \textit{and} that those events, given they happened, are subsequently successfully observed.  To make this extra conditional explicit, we write the likelihood of the data given an underlying model, $\theta$, \textit{and} that the data are included in our sample, denoted by $S$, as:
 \begin{align}
 \mathcal{L} &= P({\rm data} | \theta, S). \label{eq:like}
 \end{align}
-A variety of selection criteria are possible, and in our method we use our data in combination with the proposed model to determine the probability of particular selection criteria.  That is, we characterise a function $P(S|{\rm data},\theta)$, which colloquially can be stated as \textit{the probability of a potential observation passing selection cuts, given our observations and the underlying model}. We can introduce this expression in a few lines due to symmetry of joint probabilities:
+A variety of selection criteria are possible, and in our method we use our data in combination with the proposed model to determine the probability of particular selection criteria.  That is, we characterise a function $P(S|{\rm data},\theta)$, which colloquially can be stated as \textit{the probability of a potential observation passing selection cuts, given our observations and the underlying model}. We can introduce this expression in a few lines due to symmetry of joint probabilities and utilising that $P(x,y) = P(x|y)P(y) = P(y|x)P(x)$:
 \begin{align}
 P({\rm data}, S | \theta) &= P(S, {\rm data} | \theta) \\
 P({\rm data} | \theta, S) P(S | \theta)  &= P(S | {\rm data}, \theta) P({\rm data} | \theta)  \\
@@ -138,14 +138,14 @@ where the integral in the denominator has the same dimensionality as the experim
 \section{Sample Selection}
 \label{sec:examples}
 
- In this section we present sample selections of increasing complexity. Each sample selection is accompanied by an illustrative example inspired by Type Ia supernova cosmology, where we characterize the properties of a standard or standardizable candle. Python code implementations of all examples, including plot generation, can be found at the Github repository \verb|SampleSelection|.\footnote{\url{https://github.com/samreay/SampleSelection}}
+In this Section we present sample selections of increasing complexity. Each sample selection is accompanied by an illustrative example inspired by Type Ia supernova cosmology, where we characterize the properties of a standard or standardizable candle. Python code implementations of all examples, including plot generation, can be found at the Github repository \verb|SampleSelection|.\footnote{\url{https://github.com/samreay/SampleSelection}}
  
  
 \subsection{Complete Selection}
 \label{sec:perfect}
-In a perfect world, data is neither biased nor truncated. Data is perfect. Uncertainties are well quantified and normally distributed around true values. Presumably everything is also spherical and in a vacuum.
+In a perfect world, data is neither biased nor truncated. Data is perfect. Uncertainty does not exist. Presumably everything is also spherical and in a vacuum.
 
-We thus begin by considering an ideal situation where the sample is complete.  All events are included in the sample such that $P(S | {\rm data}, \theta)=1$.  Trivially this expression is independent of our data and model parameters $\theta$, and our likelihood from Equation \eqref{eq:main} reduces down to Equation \eqref{eq:like}. As a concrete example of this case, let us consider a model for a population of objects whose brightnesses form a normal distribution with average $\mu$ and standard deviation $\sigma$. Let us also assume that our experiment produces data $x_i$, which are independent measurements of unique objects' brightnesses (with negligible measurement uncertainty), which we can formally state as
+We thus begin by considering an ideal situation where the sample is complete.  All events are included in the sample such that $P(S | {\rm data}, \theta)=1$.  Trivially this expression is independent of our data and model parameters $\theta$, and our likelihood from Equation \eqref{eq:main} reduces down to Equation \eqref{eq:like}. As a concrete example of this case, let us consider a model for a population of objects whose brightnesses form a normal distribution with average $\mu$ and standard deviation $\sigma$. Let us also assume that our experiment produces data $x_i$, which are independent measurements of unique objects' brightnesses (with negligible measurement uncertainty), then our observations are drawn from a Normal distribution, notated as
 \begin{align}
 \vec{x} \sim \mathcal{N}(\mu,\sigma).
 \end{align}
@@ -153,20 +153,20 @@ If, having collected our observations $\vec{x}$, we wanted to constrain $\mu$ an
 \begin{align}
 P(\theta | {\rm data}) \propto P({\rm data} | \theta) P(\theta),
 \end{align}
-where our model parameters $\theta = \lbrace \mu, \sigma \rbrace$ and our data is given by $\vec{x}$.
+where our model parameters are $\theta = \lbrace \mu, \sigma \rbrace$, giving
 \begin{align}
-P(\mu,\sigma| \vec{x}) &\propto P(\vec{x} | \mu, \sigma) P(\mu, \sigma)
+P(\mu,\sigma| \vec{x}) &\propto P(\vec{x} | \mu, \sigma) P(\mu, \sigma).
 \end{align}
 With uniform priors, $P(\mu,\sigma) = {\rm constant}$, and can be absorbed into the constant of proportionality. Expanding our observation vector to take into account all observations and not just one, the posterior surface is given by
 \begin{align}
 P(\mu,\sigma| \vec{x}) &\propto \prod_{i=1}^N \mathcal{N}(x_i | \mu, \sigma), \label{eq:prod}
 \end{align}
-where $\mathcal{N}(x_i|\mu,\sigma)$ represents a the probability of drawing sample $x_i$ from the Normal distribution with mean $\mu$ and standard deviation $\sigma$. Generating a hundred data points with $\mu=100,\ \sigma=10$, we can recover our input parameters easily, as shown in Figure \ref{fig:perfect}.
+where $\mathcal{N}(x_i|\mu,\sigma)$ represents the probability of drawing sample $x_i$ from the Normal distribution with mean $\mu$ and standard deviation $\sigma$. Generating a hundred data points with $\mu=100,\ \sigma=10$ as an example, we can recover our input parameters easily, as shown in Figure \ref{fig:perfect}.
 \begin{figure}
 	\begin{center}
 		\includegraphics[width=\columnwidth]{fig_0_perfect.pdf}
 	\end{center}
-	\caption{A systematic test of our perfect model, done by stacking the output chains from fitting 100 independent realisations of our 100 data points. Any systematic offset in our model would be revealed by a shift in the stacked results away from the true parameter values. This plot can be generated by executing  \mbox{\texttt{0\_perfect.py}}}.
+	\caption{A systematic test of the model in Section \ref{sec:perfect}, done by stacking the output chains from fitting 100 independent realisations of our 100 data points. Any systematic offset in our model would be revealed by a shift in the stacked results away from the true parameter values. This plot can be generated by executing  \mbox{\texttt{0\_perfect.py}}}.
 	\label{fig:perfect}
 \end{figure}
 
@@ -181,16 +181,16 @@ where $\mathcal{N}(x_i|\mu,\sigma)$ represents a the probability of drawing samp
 \subsection{Analytic Sample Selection}
 \label{sec:imperfect}
 
-We now consider a case with selection bias that allows us to form an analytic expression for the likelihood.  This illustrative case is useful for the reader as the influence of selection bias is simple and intuitive. The case we consider is identical to the one in the previous section, \textit{except} that only the subset of objects brighter than a threshold $\alpha$ can be observed.
+We now consider a case with selection bias that allows us to form an analytic expression for the likelihood.  This illustrative case is useful for the reader as the influence of selection bias is simple and intuitive. The case we consider is identical to the one in the previous section, \textit{except} that only the subset of objects brighter than a threshold $\alpha$ are included in the sample. This case is motivated by instrumental efficiency, however we note that it is mathematically identical to common physical data truncation scenarios --- if we were observing mass, which must be positive, we could incorporate this truncation by setting $\alpha = 0$.
 
-With this sample selection, all events satisfy $x_i > \alpha$, giving $P(S|x,\theta) = \mathcal{H}(x - \alpha)$, where $\mathcal{H}$ is the Heaviside step function
+With this instrumental sample selection example, all events satisfy $x_i > \alpha$, giving $P(S|x,\theta) = \mathcal{H}(x - \alpha)$, where $\mathcal{H}$ is the Heaviside step function
 \begin{align}
 \mathcal{H}(y)\equiv \begin{cases}
 1 \quad {\rm if }\  y \ge 0 \\
 0 \quad {\rm otherwise.}
 \end{cases}
 \end{align} 
-We assign an arbitrary value $\alpha=85$ for convenience. If we do not take this truncation into account, we will recover biased parameter estimates. However, we can correct for this truncation using Equation \eqref{eq:main}, as the integral in the denominator has an analytic solution. Having successfully observed $x_i$, it follows that $x_i > \alpha$ and so $P(S|x_i,\theta) = 1$. To substitute in our normal model,
+If we do not take this truncation into account, we will recover biased parameter estimates. However, we can correct for this truncation using Equation \eqref{eq:main}, as the integral in the denominator has an analytic solution. Having successfully observed $x_i$, it follows that $x_i > \alpha$ and so $P(S|x_i,\theta) = 1$. To substitute in our normal model,
 \begin{align}
 \mathcal{L}_i &= \frac{P(S|x_i,\theta) P(x_i|\theta)}{\int P(S | D, \theta) P(D|\theta)\, dD} \\
 &= \frac{ \mathcal{N}(x_i|\mu, \sigma)}{\int_{-\infty}^\infty \mathcal{H}(D - \alpha) \mathcal{N}(D|\mu, \sigma)\, dD} \\
@@ -205,12 +205,14 @@ However, as our selection efficiency correction is independent of our observatio
 \begin{align}
 \mathcal{L} &= 2 \left( {\rm erfc}\left[ \frac{\alpha - \mu}{\sqrt{2}\sigma} \right] \right)^{-N}\prod_{i=1}^N  \mathcal{N}(x|\mu, \sigma),
 \end{align}
-We can add this correction to our model, and note that we now recover unbiased parameter estimates. This is demonstrated in Figure \ref{fig:imperfect}, which shows the posterior surfaces for when you take sample selection into account and when you do not. The selection bias preferentially selects intrinsically brighter objects and, by cutting out some of the distribution, narrows the observed distribution. As such, we note that the bias correction correctly increases the weight of low $\mu$ and high $\sigma$ parametrisations, as those models would be subject to the most sample bias. We also note that not only does the best fit location for each parameter shift, but the shape of the posterior surface itself is significantly modified.
+We can add this correction to our model, and note that we now recover unbiased parameter estimates. 
+
+Continuing our example introduced in Section \ref{sec:perfect}, we assign an arbitrary value $\alpha=85$, and again fit realisations of $100$ observations.  This is demonstrated in Figure \ref{fig:imperfect}, which shows the posterior surfaces for when you take sample selection into account and when you do not. The selection bias preferentially selects intrinsically brighter objects and, by cutting out some of the distribution, narrows the observed distribution. As such, we note that the bias correction correctly increases the weight of low $\mu$ and high $\sigma$ parametrisations, as those models would be subject to the most objects lost from the sample selection criterion. We also note that not only does the best fit location for each parameter shift, but the shape of the posterior surface itself is significantly modified.
 \begin{figure}
 	\begin{center}
 		\includegraphics[width=\columnwidth]{fig_1_imperfect.pdf}
 	\end{center}
-	\caption{A systematic test of our imperfect model, done by stacking the output chains from fitting 100 independent realisations of our 100 data points, subject to our thresholding. The bias shown in the red `Biased' contour can be corrected to via the techniques shown in Section \ref{sec:imperfect} to recover unbiased surfaces. This plot can be generated by executing  \mbox{\texttt{1\_imperfect.py}}.}
+	\caption{A systematic test of the model in Section \ref{sec:imperfect}, done by stacking the output chains from fitting 100 independent realisations of our 100 data points, subject to our thresholding. The bias shown in the red `Biased' contour can be corrected to via the techniques shown in Section \ref{sec:imperfect} to recover unbiased surfaces. This plot can be generated by executing  \mbox{\texttt{1\_imperfect.py}}.}
 	\label{fig:imperfect}
 \end{figure}
 
@@ -227,11 +229,22 @@ We can add this correction to our model, and note that we now recover unbiased p
 
 \subsection{Analytically Intractable Sample Selection}
 \label{sec:real}
-Unfortunately it is a rare scenario when dealing with nature and all her faults for us to have an analytic selection function, let alone a function encapsulated by a single parameter. A more realistic selection efficiency would take the form of non-analytic function of many model parameters. And the function would probably be stochastic too, just to make things more difficult. Provided a method of forward modelling or simulating observations, the solution is to combine an analytic approximate correction with Monte Carlo integration. Whilst other integration algorithms can be used, Monte Carlo integration is an appropriate choice, as it is based on drawing random numbers from underlying distributions and is efficient for evaluating high dimensional integrals.
+Unfortunately it is a rare scenario when dealing with nature and all her faults for us to have an analytic selection function, let alone a function encapsulated by a single parameter. A more realistic selection efficiency would take the form of non-analytic function of many model parameters. And the function would probably be stochastic too, just to make things more difficult. 
 
-In this subsection we introduce an example that presents computational challenges in the evaluation of the posterior, and which better reflects the model complexity in supernova cosmology analysis. The specific challenge is that the denominator in Equation \eqref{eq:main} is dependent on $\theta$ and does not have an analytic solution (i.e. has to be solved numerically). When using Monte Carlo sampling methods to probe the posterior with this kind of likelihood, the integral in the denominator must be calculated with each draw. We therefore present importance sampling as an approach that makes these posteriors more computationally tractable.
+In this subsection we introduce an example that presents computational challenges in the evaluation of the posterior, and which better reflects the model complexity in supernova cosmology analysis. The specific challenge is that the denominator in Equation \eqref{eq:main} is dependent on $\theta$ and does not have an analytic solution (i.e. has to be solved numerically). 
 
-Let us modify our imperfect toy model from the previous section. Instead of observing just one variable, $x$, we also observe a new independent variable, $y$, which is drawn from its own distribution $y \sim \mathcal{N}(\mu_y, \sigma_y)$, and has no measurement uncertainty (like $x$). Our selection efficiency can now become a combination of $x$ and $y$, such that we only observe events that satisfy $x + \beta y > \alpha$, giving $P(S|x,y,\theta) = \mathcal{H}(x + \beta y - \alpha)$, giving a relationship reminiscent of the stretch and colour corrections for standardising supernovae.  Our likelihood for such a toy model becomes now the combination of probabilities for observing both $x$ and $y$, with the denominator becoming an integral over all possible $X$ and $Y$ observations subject to our selection effects.
+
+A simple solution to analytic intractability in the denominator of Equation \eqref{eq:main} is to only sample from the numerator, adding corrections from the denominator after the fact. However, this strategy rarely works, as ignoring the denominator completely can lead to fits in completely wrong areas of parameter space. The solution is to find an approximate, analytic correction we can utilise in our fitting algorithm which seeks to shift the region of parameter space sampled by the sampler closer to the correct area, and then importance sample our sampled Monte Carlo chains to provide a fully corrected surface. Given an analytic approximation to the denominator $w_{\rm approx}$, we explicitly break our likelihood per observation into two parts, $\mathcal{L}_i = \mathcal{L}_{i1} \mathcal{L}_{i2}$, with the parts given in general by
+\begin{align}
+\mathcal{L}_{i1} &= \frac{P(S|{\rm data},\theta) P({\rm data}|\theta)}{w_{\rm approx}} \\
+\mathcal{L}_{i2} &= \frac{w_{\rm approx}}{\int P(S, D|\theta)\, dD}.
+\end{align}
+By adding the approximate correction $w_{\rm approx}$ we seek to sample the correct region of parameter space, and provided a method of forward modelling or simulating observations, we can evaluate $\mathcal{L}_{i2}$ numerically using Monte Carlo integration. Whilst other integration algorithms can be used, Monte Carlo integration is an appropriate choice, as it is based on drawing random numbers from underlying distributions and is efficient for evaluating high dimensional integrals.	
+
+
+
+
+Let us modify our imperfect toy model from the previous section. Instead of observing just one variable, $x$, we also observe a new independent variable, $y$, which is drawn from its own distribution $y \sim \mathcal{N}(\mu_y, \sigma_y)$, and has no measurement uncertainty (like $x$). Our selection efficiency can now become a combination of $x$ and $y$, such that we only observe events that satisfy $x + \beta y > \alpha$, giving $P(S|x,y,\theta) = \mathcal{H}(x + \beta y - \alpha)$, a relationship reminiscent of the stretch and colour corrections for standardising supernovae.  Our likelihood for such a toy model becomes now the combination of probabilities for observing both $x$ and $y$, with the denominator becoming an integral over all possible $X$ and $Y$ events subject to our selection effects.
 \begin{align}
 \mathcal{L}_i &= \frac{P(S|x_i, y_i,\theta) P(x_i, y_i|\theta)}{\iint P(S | X, Y, \theta) P(X, Y|\theta)\, dX\,dY},
 \end{align}
@@ -240,26 +253,9 @@ where $\theta = \lbrace \mu, \sigma, \mu_y, \sigma_y \rbrace$. As before, given 
 \mathcal{L}_i &= \frac{ \mathcal{N}(x_i|\mu, \sigma) \mathcal{N}(y_i|\mu_y, \sigma_y)}
 {\iint_{-\infty}^\infty \mathcal{H}(X + \beta Y - \alpha) \mathcal{N}(X|\mu, \sigma) \mathcal{N}(Y|\mu_y, \sigma_y)\, dX dY} \label{eq:above}
 \end{align}
-Assume that we cannot solve this integral analytically, and must resort to numeric solutions. These often clash with sampling methods, especially for high dimensional integrals. Inserting Monte Carlo integration into fitting algorithms can drastically slow them down, and algorithms such as Hamiltonian MCMC that require continuous surfaces can easily fail on surfaces that fluctuate due to the stochastic nature of Monte Carlo integration. Even by fixing the samples used in MC integration (thereby giving a continuous surface), the complexity of the surface derivatives will pose almost insurmountable problems for any algorithms that utilise surface gradients.
-
-It is tempting to separate out the numerator and denominator of Equation \eqref{eq:above} and only sample from the numerator, adding corrections from the denominator after the fact. However, this strategy rarely works, as ignoring the denominator completely can lead to fits in completely wrong areas of parameter space. The solution to find an approximate, analytic correction we can utilise in our fitting algorithm which seeks to shift the region of parameter space sampled by the sampler closer to the correct area, and then importance sample our MC chains to provide a fully corrected surface. Given an approximate analytic correction $w_{\rm approx}$, we explicitly break our likelihood into two parts, $\mathcal{L}_i = \mathcal{L}_{i1} \mathcal{L}_{i2}$, with the parts given in general by
+In our example, if $\beta \ll 1$, such that the majority of selection effect is encapsulated by $x$ and not $y$, our approximate correction can take the form found in the previous correction from Section \ref{sec:imperfect}. Having a known $\beta$ and a guess $\mu_{y, {\rm approx}}$, we add in a small adjustment to the analytic correction from Section \ref{sec:imperfect} to account for the expected mean contribution of $y$ into the selection effect:
 \begin{align}
-\mathcal{L}_{i1} &= \frac{P(S|{\rm data},\theta) P({\rm data}|\theta)}{w_{\rm approx}} \\
-\mathcal{L}_{i2} &= \frac{w_{\rm approx}}{\int P(S, D|\theta)\, dD}.
-\end{align}
-
-\begin{figure}
-	\begin{center}
-		\includegraphics[width=\columnwidth]{fig_2_real.pdf}
-	\end{center}
-	\caption{A systematic test of our more complicated model, done by stacking the output chains from fitting 100 independent realisations of our 100 data points, subject to our thresholding. The likelihood $\mathcal{L}_1$ was evaluated, and reweighted using Monte Carlo integration of a hundred thousand possible events as per $\mathcal{L}_2$. The truncated data with no correction is shown as `Biased' in dotted red, the `Approximate` only correction ($\mathcal{L}_1$) shown in dashed green, and the final reweighted chain shown in solid black as `Corrected'. A large number of samples of $\mathcal{L}_1$ had to be generated to ensure sufficient sampling of our `Corrected' posterior. This plot can be generated by executing \mbox{\texttt{2\_real.py}}.}
-	\label{fig:real}
-\end{figure}
-
-
-In our example, if $\beta \ll 1$, such that the majority of selection effect is encapsulated by $x$ and not $y$, our approximate correction can take the form found in the previous correction from Section \ref{sec:imperfect}. Having true values of $\mu = 100$, $\sigma = 10$, $\mu_y = 30$, $\sigma_y = 5$, $\alpha=92$ and a known $\beta = 0.2$, we can give a concrete example. Assuming some prior, imperfect knowledge of $\mu_y$ (perhaps we believe it is approximately $20$) we estimate that the average contribution from $\beta y$ is approximately $20\beta = 4$ (which is close to the correct value of $6$), and from this we add in a small adjustment to the analytic correction from Section \ref{sec:imperfect}:
-\begin{align}
-w_{\rm approx} = \frac{1}{2} {\rm erfc}\left[ \frac{\alpha - \mu - 4}{\sqrt{2}\sigma} \right].
+w_{\rm approx} = \frac{1}{2} {\rm erfc}\left[ \frac{\alpha - \mu - \beta \mu_{y, {\rm approx}}}{\sqrt{2}\sigma} \right].
 \end{align}
 This gives our likelihood parts as
 \begin{align}
@@ -277,18 +273,15 @@ We now wish to move to a set of observations. As $\mathcal{L}_{i2}$ is independe
 \end{align}
 $\mathcal{L}_1$ can thus be fitted with a traditional sampler without numeric difficulty or slowdown, and $\mathcal{L}_2$ allows us to calculate the weight of each sample given by fitting $\mathcal{L}_{1}$. We are effectively importance sampling our likelihood evaluations. The computational benefits of this should not be understated either --- each sample in our chains can be reweighted independently, providing a task that is trivially parallelisable. 
 
-Taking our concrete example stated previously, we end up with a corrected posterior surface as shown in Figure \ref{fig:real}. It is important to note that the point of maximum likelihood is biased by roughly the same amount in the biased and approximate posterior surfaces in Figure \ref{fig:real}. However, as the approximately correctly posterior is broader than the biased surface, it has far more samples in the region of parameter space mapped by the fully corrected posterior. This is the entire purpose of the approximate correction --- to maximise the number of samples in the correct region of parameter space, so that we can importance sample our chains efficiently.
+Taking our example, and setting values for our model  $\mu = 100$, $\sigma = 10$, $\mu_y = 30$, $\sigma_y = 5$, $\alpha=92$ and a known $\beta = 0.2$ with $\mu_{y, {\rm approx}} = 20$, we can realise $100$ observations as was done in previous examples, and fit them. We end up with a corrected posterior surface as shown in Figure \ref{fig:real}. It is important to note that the point of maximum likelihood is biased by roughly the same amount in the biased and approximate posterior surfaces in Figure \ref{fig:real}. However, as the approximately correctly posterior is broader than the biased surface, it has far more samples in the region of parameter space mapped by the fully corrected posterior. This is the entire purpose of the approximate correction --- to maximise the number of samples in the correct region of parameter space, so that we can importance sample our chains efficiently.
 
-
-
-
-
-
-
-
-
-
-
+\begin{figure}
+	\begin{center}
+		\includegraphics[width=\columnwidth]{fig_2_real.pdf}
+	\end{center}
+	\caption{A systematic test of the model from Section \ref{sec:real}, done by stacking the output chains from fitting 100 independent realisations of our 100 data points, subject to our thresholding. The likelihood $\mathcal{L}_1$ was evaluated, and reweighted using Monte Carlo integration of a hundred thousand possible events as per $\mathcal{L}_2$. The truncated data with no correction is shown as `Biased' in dotted red, the `Approximate` only correction ($\mathcal{L}_1$) shown in dashed green, and the final reweighted chain shown in solid black as `Corrected'. A large number of samples of $\mathcal{L}_1$ had to be generated to ensure sufficient sampling of our `Corrected' posterior. This plot can be generated by executing \mbox{\texttt{2\_real.py}}.}
+	\label{fig:real}
+\end{figure}
 
 
 
