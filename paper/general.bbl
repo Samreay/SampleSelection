@@ -17,16 +17,37 @@
   {mn@eprint@\@tempb}{\@tempb:\@tempc}{\expandafter \expandafter \csname
   mn@eprint@\@tempb\endcsname \expandafter{\@tempc}}}
 
+\bibitem[\protect\citeauthoryear{{Abbott} et~al.,}{{Abbott}
+  et~al.}{2016}]{AbbottAbbott2016}
+{Abbott} B.~P.,  et~al., 2016, \mn@doi [Physical Review X]
+  {10.1103/PhysRevX.6.041015}, \href
+  {http://adsabs.harvard.edu/abs/2016PhRvX...6d1015A} {6, 041015}
+
+\bibitem[\protect\citeauthoryear{Andreon \& Weaver}{Andreon \&
+  Weaver}{2015}]{andreon2015bayesian}
+Andreon S.,  Weaver B.,  2015, Switzerland: Springer Inetrnational Publishing
+
 \bibitem[\protect\citeauthoryear{{Betoule} et~al.,}{{Betoule}
   et~al.}{2014}]{BetouleKessler2014}
 {Betoule} M.,  et~al., 2014, \mn@doi [\aap] {10.1051/0004-6361/201423413},
   \href {http://adsabs.harvard.edu/abs/2014A%26A...568A..22B} {568, A22}
+
+\bibitem[\protect\citeauthoryear{{Buchner} et~al.,}{{Buchner}
+  et~al.}{2015}]{BuchnerGeorgakakis2015}
+{Buchner} J.,  et~al., 2015, \mn@doi [\apj] {10.1088/0004-637X/802/2/89}, \href
+  {http://adsabs.harvard.edu/abs/2015ApJ...802...89B} {802, 89}
 
 \bibitem[\protect\citeauthoryear{Butkevich, Berdyugin  \& Teerikorpi}{Butkevich
   et~al.}{2005}]{Butkevich2005}
 Butkevich A.~G.,  Berdyugin A.~V.,   Teerikorpi P.,  2005, \mn@doi [Monthly
   Notices of the Royal Astronomical Society]
   {10.1111/j.1365-2966.2005.09306.x}, 362, 321
+
+\bibitem[\protect\citeauthoryear{{Cameron} \& {Pettitt}}{{Cameron} \&
+  {Pettitt}}{2012}]{CameronPettitt2012}
+{Cameron} E.,  {Pettitt} A.~N.,  2012, \mn@doi [\mnras]
+  {10.1111/j.1365-2966.2012.21371.x}, \href
+  {http://adsabs.harvard.edu/abs/2012MNRAS.425...44C} {425, 44}
 
 \bibitem[\protect\citeauthoryear{Colchero \& Clark}{Colchero \&
   Clark}{2012}]{JANE1898}
@@ -51,11 +72,56 @@ Grogger J.~T.,  Carson R.~T.,  1991, Journal of applied econometrics, 6, 225
 Gull S.~F.,  1989, in , Maximum Entropy and Bayesian Methods.
 Springer, pp 511--518
 
+\bibitem[\protect\citeauthoryear{{Jennings} \& {Madigan}}{{Jennings} \&
+  {Madigan}}{2017}]{JenningsMadigan2017}
+{Jennings} E.,  {Madigan} M.,  2017, \mn@doi [Astronomy and Computing]
+  {10.1016/j.ascom.2017.01.001}, \href
+  {http://adsabs.harvard.edu/abs/2017A%26C....19...16J} {19, 16}
+
+\bibitem[\protect\citeauthoryear{{Kelly}, {Fan}  \& {Vestergaard}}{{Kelly}
+  et~al.}{2008}]{KellyFan2008}
+{Kelly} B.~C.,  {Fan} X.,   {Vestergaard} M.,  2008, \mn@doi [\apj]
+  {10.1086/589501}, \href {http://adsabs.harvard.edu/abs/2008ApJ...682..874K}
+  {682, 874}
+
 \bibitem[\protect\citeauthoryear{Klein \& Moeschberger}{Klein \&
   Moeschberger}{2005}]{klein2005survival}
 Klein J.~P.,  Moeschberger M.~L.,  2005, Survival analysis: techniques for
   censored and truncated data.
 Springer Science \& Business Media
+
+\bibitem[\protect\citeauthoryear{Liang}{Liang}{2010}]{Liang2010}
+Liang F.,  2010, \mn@doi [Journal of Statistical Computation and Simulation]
+  {10.1080/00949650902882162}, 80, 1007
+
+\bibitem[\protect\citeauthoryear{{Loredo}}{{Loredo}}{2004}]{Loredo2004}
+{Loredo} T.~J.,  2004, in {Fischer} R.,  {Preuss} R.,   {Toussaint} U.~V.,
+  eds,  American Institute of Physics Conference Series Vol. 735, American
+  Institute of Physics Conference Series. pp 195--206 (\mn@eprint {}
+  {astro-ph/0409387}), \mn@doi{10.1063/1.1835214}
+
+\bibitem[\protect\citeauthoryear{{Marshall}, {Tananbaum}, {Avni}  \&
+  {Zamorani}}{{Marshall} et~al.}{1983}]{MarshallTananbaum1983}
+{Marshall} H.~L.,  {Tananbaum} H.,  {Avni} Y.,   {Zamorani} G.,  1983, \mn@doi
+  [\apj] {10.1086/161016}, \href
+  {http://adsabs.harvard.edu/abs/1983ApJ...269...35M} {269, 35}
+
+\bibitem[\protect\citeauthoryear{{Messenger} \& {Veitch}}{{Messenger} \&
+  {Veitch}}{2013}]{MessengerVeitch2013}
+{Messenger} C.,  {Veitch} J.,  2013, \mn@doi [New Journal of Physics]
+  {10.1088/1367-2630/15/5/053027}, \href
+  {http://ukads.nottingham.ac.uk/abs/2013NJPh...15e3027M} {15, 053027}
+
+\bibitem[\protect\citeauthoryear{M{\o}ller, Pettitt, Reeves  \&
+  Berthelsen}{M{\o}ller et~al.}{2006}]{MollerPettitt2006}
+M{\o}ller J.,  Pettitt A.~N.,  Reeves R.,   Berthelsen K.~K.,  2006, \mn@doi
+  [Biometrika] {10.1093/biomet/93.2.451}, 93, 451
+
+\bibitem[\protect\citeauthoryear{{Murray}, {Ghahramani}  \& {MacKay}}{{Murray}
+  et~al.}{2012}]{MurrayGhahramani2012}
+{Murray} I.,  {Ghahramani} Z.,   {MacKay} D.,  2012, preprint, \href
+  {http://adsabs.harvard.edu/abs/2012arXiv1206.6848M} {} (\mn@eprint {arXiv}
+  {1206.6848})
 
 \bibitem[\protect\citeauthoryear{O'Neill \& Barry}{O'Neill \&
   Barry}{1995}]{o1995truncated}
